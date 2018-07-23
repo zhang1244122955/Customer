@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zz624.dao.OrdersDao">
+	<!-- 根据不同的客户经理(uid)登录查找对应的订单数据(所有数据) -->
+	<select id="selectAllOrders" parameterType="int"
+		resultType="com.zz624.entry.Orders">
+		select * from orders where userid=#{userid} and
+		osubmitstatus="未提交"
+	</select>
+
+	<!-- 根据不同的客户经理(uid)登录查找对应的订单数据(分页后) -->
+	<select id="selectAllById" parameterType="map"
+		resultType="com.zz624.entry.Orders">
+		select * from orders where userid=#{userid} and
+		osubmitstatus="未提交" limit #{currentPage},8
+	</select>
+
+	<!-- 根据传过来的页码进行分页查询 -->
+	<!-- <select id="selectOrderByCurr" parameterType="map" resultType="com.zz624.entry.Orders"> 
+		select * from orders limit </select> -->
+
+	<!-- 根据查出的订单找出对应的客户信息 -->
+	<select id="selectByCustid" parameterType="int"
+		resultType="com.zz624.entry.Customer">
+		select * from customer where custid=#{custid}
+	</select>
+
+	<!-- 查出的订单找出对应的商品信息 -->
+	<select id="selectByGid" parameterType="int" resultType="com.zz624.entry.Goods">
+		select *
+		from goods where gid=#{gid}
+	</select>
+
+	<!-- 查找所有客户的名称 -->
+	<select id="selectAllCustName" resultType="com.zz624.entry.Customer">
+		select * from customer
+	</select>
+
+	<!-- 查找所有商品的名称 -->
+	<select id="selectAllGName" resultType="com.zz624.entry.Goods">
+		select * from goods
+	</select>
+
+	<!-- 增加订单 -->
+	<insert id="insertOrders" parameterType="com.zz624.entry.Orders">
+		insert into
+		orders(custid,userid,gid,gnum,ocreatetime,ooffer)
+		values(#{custid},#{userid},#{gid},#{gnum},#{ocreatetime},#{ooffer})
+	</insert>
+
+	<!-- 修改订单 -->
+	<update id="updateOrders" parameterType="com.zz624.entry.Orders">
+		update orders set
+		gid=#{gid},gnum=#{gnum},ooffer=#{ooffer} where oid=#{oid}
+	</update>
+
+	<!-- 根据订单编号查找单个订单 -->
+	<select id="selectByOid" parameterType="int" resultType="com.zz624.entry.Orders">
+		select *
+		from orders where oid=#{oid}
+	</select>
+
+	<!-- 提交订单 -->
+	<update id="updateOrdersSubmit" parameterType="com.zz624.entry.Orders">
+		update orders set
+		osubmitstatus=#{osubmitstatus} where oid=#{oid}
+	</update>
+
+	<!-- 审核订单(不分页) -->
+	<select id="selectIsStatus" resultType="com.zz624.entry.Orders">
+		select * from orders
+		<where>
+			<if test="osubmitstatus != '未提交'">
+				<if test="ostatus != '已通过'">
+					and osubmitstatus = '已提交' and ostatus
+					= '未审核'
+				</if>
+				<if test="ostatus != '未通过'">
+					or osubmitstatus = '已提交' and ostatus
+					= '已修改'
+				</if>
+			</if>
+		</where>
+	</select>
+
+	<!-- 审核订单(分页) -->
+	<select id="selectIsStatusCurr" parameterType="map"
+		resultType="com.zz624.entry.Orders">
+		select * from orders
+		<where>
+			<!-- 通过客户名称进行模糊查询 -->
+			<if test="custid != null">
+				and custid=#{custid}
+			</if>
+			<if test="osubmitstatus != '未提交'">
+				<if test="ostatus != '已通过'">
+					and osubmitstatus = '已提交' and ostatus
+					= '未审核'
+				</if>
+				<if test="ostatus != '未通过'">
+					or osubmitstatus = '已提交' and ostatus
+					= '已修改'
+				</if>
+
+			</if>
+
+		</where>
+		<if test="currentPage!=null">
+			limit #{currentPage},8
+		</if>
+	</select>
+
+	<!-- 查找用户姓名 -->
+	<select id="selectByUserid" parameterType="int" resultType="com.zz624.entry.User">
+		select * from user where userid=#{userid}
+	</select>
+
+	<!-- 修改审核状态和意见 -->
+	<update id="updateSubmitAndRemarks" parameterType="com.zz624.entry.Orders">
+		update orders
+		set
+		ochecktime=#{ochecktime},usercheckid=#{usercheckid},ostatus=#{ostatus},oremarks=#{oremarks}
+		where oid=#{oid}
+	</update>
+
+	<!-- 显示处理订单(未分页) -->
+	<select id="selectOrdersToDeal" parameterType="int"
+		resultType="com.zz624.entry.Orders">
+		select * from orders where userid=#{userid} and
+		ostatus="未通过"
+	</select>
+
+	<!-- 显示处理订单(分页) -->
+	<select id="selectOrdersToDealCurr" parameterType="map"
+		resultType="com.zz624.entry.Orders">
+		select * from orders where userid=#{userid} and
+		ostatus="未通过" limit #{currentPage},8
+	</select>
+
+	<!-- 当订单审核不通过时修改订单报价 -->
+	<update id="updateOrderOoffer" parameterType="com.zz624.entry.Orders">
+		update orders set
+		ooffer=#{ooffer} where oid=#{oid}
+	</update>
+
+	<!-- 修改订单报价后进行订单审核状态的修改 -->
+	<update id="updateOrderOofferCheck" parameterType="int">
+		update orders
+		set ostatus="已修改" where oid=#{oid}
+	</update>
+
+	<!-- 订单归档(未分页) -->
+	<select id="selectAllFinshOrders" resultType="com.zz624.entry.Orders">
+		select * from
+		orders where ostatus="已通过"
+	</select>
+
+	<!-- 订单归档(分页) -->
+	<select id="selectAllFinshOrdersCurr" parameterType="map"
+		resultType="com.zz624.entry.Orders">
+		select * from orders where ostatus="已通过" limit
+		#{currentPage},8
+	</select>
+
+	<select id="selectAllSale" resultType="int">
+		select userid from user
+		where roleid=3
+	</select>
+
+	<!-- 通过客户名去查找客户id -->
+	<select id="selectCustidByCustname" parameterType="java.lang.String"
+		resultType="int">
+		select custid from customer where custname like #{custname}
+	</select>
+	
+	
+	
+</mapper>

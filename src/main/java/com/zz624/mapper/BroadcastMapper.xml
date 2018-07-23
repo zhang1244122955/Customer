@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zz624.dao.BroadcastDao">
+	<!-- 更新轮播信息 -->
+	<update id="updateBroadcast" parameterType="com.zz624.entry.Broadcast">
+		update broadcast set href=#{href},path=#{path},title=#{title}where id=#{id};
+	</update>
+	<!-- 查找轮播信息 -->
+	
+	<select id="selectBroadcast" resultType="com.zz624.entry.Broadcast">
+		select * from broadcast;
+	</select>
+	
+	
+</mapper>

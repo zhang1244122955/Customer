@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 要实现的Dao的路径 -->
+<mapper namespace="com.zz624.dao.PlanDao">
+	<select id="selectAllChance" resultType="com.zz624.entry.Chance" parameterType="map">
+		select * from chance
+		<where>
+			<if test="assigneeid!=null">
+				and assigneeid=#{assigneeid}
+			</if>
+			<if test="chid!=null">
+				and chid=#{chid}
+			</if>
+			<if test="insreach!=null">
+				and chid LIKE #{insreach}
+				OR custname LIKE #{insreach}
+				OR chsuccess LIKE #{insreach}
+				OR choutline LIKE #{insreach}
+				OR chcontact LIKE #{insreach}
+				OR chcontactphone LIKE #{insreach}
+				OR chdescribe LIKE #{insreach}
+				OR createid LIKE #{insreach}
+				OR chcreatetime LIKE #{insreach}
+				OR assigneeid LIKE #{insreach}
+				OR chassigneetime LIKE #{insreach}
+				OR chstatus LIKE #{insreach}
+			</if>
+		</where>
+		<if test="currentPage!=null">
+			limit #{currentPage},8 
+		</if>
+	</select>
+	<insert id="insertPlan" parameterType="com.zz624.entry.Plan">
+		insert into plan(chid,planname,planintrol,planstarttime,planendtime,planback) values(#{chid},#{planname},#{planintrol},#{planstarttime},#{planendtime},#{planback})
+	</insert>
+	<select id="selectAllPlan" resultType="com.zz624.entry.Plan" parameterType="map">
+		select * from plan 
+		<where>
+			<!-- <if test="planid!=null">
+				and planid=#{planid}
+			</if> -->
+			<if test="chid!=null">
+				and chid=#{chid}
+			</if>
+			<if test="planback!=null">
+				and planback=#{planback}
+			</if>
+			<if test="insreach!=null">
+				and planback LIKE #{insreach}
+				OR planid LIKE #{insreach}
+				OR chid LIKE #{insreach}
+				OR planname LIKE #{insreach}
+				OR planintrol LIKE #{insreach}
+				OR planstarttime LIKE #{insreach}
+				OR planendtime LIKE #{insreach}
+			</if>
+		</where>
+		<if test="currentPage!=null">
+			limit #{currentPage},8 
+		</if>
+	</select>
+	<select id="selectAPlan" resultType="com.zz624.entry.Plan" parameterType="int">
+		select * from plan where planid=#{planid}
+	</select>
+	<update id="updatePlan" parameterType="com.zz624.entry.Plan">
+		update plan set planback=#{planback} where planid=#{planid}
+	</update>
+	<select id="selectRoleId" resultType="int" parameterType="int">
+		select roleid from user where userid=#{userid}
+	</select>
+	<select id="selectPower" resultType="int" parameterType="int">
+		select power from role where roleid=#{roleid}
+	</select>
+	<select id="selectRoleIdByName" resultType="int" parameterType="java.lang.String">
+		select roleid from role where rolename=#{rolename}
+	</select>
+	<select id="selectUserByUId" resultType="com.zz624.entry.User" parameterType="int">
+		select * from user where roleid=#{roleid}
+	</select>
+</mapper>

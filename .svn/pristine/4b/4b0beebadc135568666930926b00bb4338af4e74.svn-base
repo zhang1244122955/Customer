@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zz624.dao.RoleDao">
+	<!-- 查询角色 -->
+	<select id="selectRole" parameterType="com.zz624.entry.Role" resultType="com.zz624.entry.Role">
+		select * from role where roleid=#{roleid};
+	</select>
+	<!-- 添加角色 -->
+	<insert id="insertRole" parameterType="com.zz624.entry.Role">
+		insert into role (rolename,power) values(#{rolename},#{power});
+	</insert>
+	<!-- 删除角色 -->
+	<delete id="deleteRole" parameterType="com.zz624.entry.Role">
+		delete from role where roleid=#{roleid};
+	</delete>
+	<!-- 修改角色 -->
+	<update id="updateRole" parameterType="com.zz624.entry.Role">
+		update role set rolename=#{rolename},power=#{power} where roleid=#{roleid};
+	</update>
+	<!-- 查询所有角色分页 -->
+	<select id="selectRoless" resultType="com.zz624.entry.Role">
+		select * from role limit #{currentPage},#{pageSize};
+	</select>
+	<!-- 查询所有角色 -->
+	<select id="selectRoles" resultType="com.zz624.entry.Role">
+		select * from role;
+	</select>
+</mapper>

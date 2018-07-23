@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zz624.dao.ChanceDao">
+	<!-- 查询 -->
+	<!-- 销售主管查找所有机会 -->
+	<select id="selectChance" resultType="int">
+		select count(*) from chance;
+	</select>
+	
+	<!-- 销售主管查找所有机会(分页) -->
+	<select id="selectChanceByPage" parameterType="int" resultType="com.zz624.entry.Chance">
+		select * from chance limit #{page},8;
+	</select>
+	
+	<!-- 客户经理查询所有销售机会 -->
+	<select id="selectChanceById" parameterType="int" resultType="int">
+		select count(*) from chance where createid=#{createid}
+	</select>
+	
+	<!-- 客户经理查询所有销售机会（分页） -->
+	<select id="selectChanceByIdByPage" parameterType="map" resultType="com.zz624.entry.Chance">
+		select * from chance where createid=#{createid} limit #{page},8
+	</select>
+	
+	<!-- 客户经理查询所有销售机会 -->
+	<select id="selectAllById" resultType="com.zz624.entry.Chance">
+		select * from chance where createid=#{createid}
+	</select>
+	<select id="selectByChid" resultType="com.zz624.entry.Chance">
+		select * from chance where chid=#{chid}
+	</select>
+	<!-- 查询客户经理的方法 -->
+	<select id="selectManager" parameterType="String" resultType="com.zz624.entry.User">
+	select * from user where roleid=4 and name!=#{assigneedname}
+	</select>
+	<!-- 查询客户经理的方法 -->
+	<select id="selectManagerInfo" resultType="com.zz624.entry.User">
+	select * from user where roleid=4
+	</select>
+	<!-- 查询通过机会编号查询指派人姓名的方法 -->
+	<select id="selectUserName" parameterType="int" resultType="com.zz624.entry.User">
+	select u.name,u.userid from user u,chance c where c.chid=#{chid} and c.assigneeid=u.userid
+	</select>
+	
+	<!-- 修改 -->
+	<update id="updateChance" parameterType="com.zz624.entry.Chance">
+		update chance set custname=#{custname},chsuccess=#{chsuccess},choutline=#{choutline},chcontact=#{chcontact},chcontactphone=#{chcontactphone},chdescribe=#{chdescribe},assigneeid=#{assigneeid},chassigneetime=#{chassigneetime},chstatus=#{chstatus} where chid=#{chid}
+	</update>
+	<!-- 删除 -->
+	<delete id="deleteChance" parameterType="int">
+	delete from chance where chid=#{chid}
+	</delete>
+	<!-- 添加 -->
+	<insert id="insertChance" parameterType="com.zz624.entry.Chance">
+		insert into
+		chance(custname,chsuccess,choutline,chcontact,chcontactphone,chdescribe,createid,chcreatetime,assigneeid,chassigneetime,chstatus)
+		values(#{custname},#{chsuccess},#{choutline},#{chcontact},#{chcontactphone},#{chdescribe},#{createid},#{chcreatetime},#{assigneeid},#{chassigneetime},#{chstatus})
+	</insert>
+</mapper>

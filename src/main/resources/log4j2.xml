@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+<properties>
+        <property name="LOG_HOME">D:/logs</property>
+        <property name="FILE_NAME">mylog</property>
+    </properties>
+	<Appenders>  
+		<!-- 配置日志输出文件名字 追加读写 -->
+		<RollingFile name="taoge" fileName="${LOG_HOME}/${FILE_NAME}.log"
+			filePattern="${LOG_HOME}/${FILE_NAME}.%d{yyyy-MM-dd}.log" append="true">
+			<!-- 输出格式 -->
+			<PatternLayout
+				pattern="[%l] [%t] [%-4r] [%d{yyyy-MM-dd HH:mm:ss,SSS}] [%p] \: %m%n" />
+			<!-- 设置策略 -->
+			<Policies>
+				<TimeBasedTriggeringPolicy interval="1"
+					modulate="true" />
+			</Policies>
+		</RollingFile>
+		<!-- 标准输出 -->
+		<Console name="STDOUT" target="SYSTEM_OUT">
+			<!-- 输出格式 -->
+			<PatternLayout
+				pattern="[%l] [%t] [%-4r] [%d{yyyy-MM-dd HH:mm:ss,SSS}] [%p] \: %m%n" />
+		</Console>
+	</Appenders>
+	<Loggers>
+		<!-- 配置记录器级别   -->
+		<Root level="trace">
+			<AppenderRef ref="taoge" />
+			<!-- 输出设置 -->
+			<AppenderRef ref="STDOUT" />
+		</Root>
+	</Loggers>
+</Configuration>  

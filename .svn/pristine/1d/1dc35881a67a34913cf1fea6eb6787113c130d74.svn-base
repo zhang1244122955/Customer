@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zz624.dao.PowerDao">
+	<!-- 添加权限 -->
+	<insert id="insertPower" parameterType="com.zz624.entry.Power">
+		insert into power (powername,mpowerid,powervalue) values(#{powername},#{mpowerid},#{powervalue});
+	</insert>
+	<!-- 删除权限 -->
+	<delete id="deletePower" parameterType="com.zz624.entry.Power">
+		delete from power where powerid=#{powerid};
+	</delete>
+	<!-- 修改权限 -->
+	<update id="updatePower" parameterType="com.zz624.entry.Power">
+		update power set powername=#{powername},mpowerid=#{mpowerid} where powerid=#{powerid};
+	</update>
+	<!-- 查询权限 -->
+	<select id="selectPower" parameterType="com.zz624.entry.Power" resultType="com.zz624.entry.Power">
+		select * from power where powerid=#{powerid};
+	</select>
+	<!-- 查询所有权限分页 -->
+	<select id="selectPowerss" resultType="com.zz624.entry.Power">
+		select * from power limit #{currentPage},#{pageSize};
+	</select>
+	<!-- 查询所有权限 -->
+	<select id="selectPowers" resultType="com.zz624.entry.Power">
+		select * from power;
+	</select>
+</mapper>

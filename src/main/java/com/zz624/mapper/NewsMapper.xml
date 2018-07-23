@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zz624.dao.NewsDao">
+	<!-- 添加新闻 -->
+	<insert id="insertNews" parameterType="com.zz624.entry.News">
+		insert into news
+		(newstitle,newsstatus,newsdate)
+		values(#{newstitle},#{newsstatus},#{newsdate});
+	</insert>
+
+	<!-- 删除新闻 -->
+	<delete id="deleteNews" parameterType="int">
+		delete from news where
+		newsid = #{newsid};
+	</delete>
+
+	<!-- 修改新闻 -->
+	<update id="updateNews" parameterType="com.zz624.entry.News">
+		update news
+		<trim prefix="set" suffixOverrides=",">
+			<if test="newstitle!=null">newstitle = #{newstitle},</if>
+			<if test="newsstatus!=null">newsstatus=#{newsstatus},</if>
+			<if test="newsdate!=null">newsdate=#{newsdate},</if>
+			
+		</trim>
+		where newsid = #{newsid}
+	</update>
+
+	<!-- 查找所有新闻 -->
+	<select id="selectNews" resultType="int">
+		select count(*) from news;
+	</select>
+	
+	<!-- 查找所有新闻(分页) -->
+	<select id="selectNewsByPage" parameterType="int" resultType="com.zz624.entry.News">
+		select * from news order by newsdate desc limit #{page},8;
+	</select>
+	
+	<!-- 查找新闻(通过id) -->
+	<select id="selectNewsById" parameterType="int" resultType="com.zz624.entry.News">
+		select * from news where newsid = #{newsid};
+	</select>
+	
+	<!-- 查找可见新闻 -->
+	<select id="selectNewsByStatus" parameterType="int" resultType="com.zz624.entry.News">
+		select * from news where newsstatus = #{newsstatus}  order by newsdate desc;
+	</select>
+</mapper>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 要实现的Dao的路径 -->
+<mapper namespace="com.zz624.dao.ServeDao">
+	<select id="selectAllServe" resultType="com.zz624.entry.Serve" parameterType="map">
+		select * from serve
+		<where>
+			<if test="sercreateid==null and serdealid==null">
+				and 1=1
+			</if>
+			<if test="sercreateid!=null or serdealid!=null">
+				and (sercreateid=#{sercreateid} or serdealid=#{serdealid})
+			</if>
+			<if test="insearch!=null">
+				and (serveid LIKE #{insearch}
+				OR  servename LIKE #{insearch}
+				OR servecontent LIKE #{insearch}
+				OR cusid LIKE #{insearch} 
+				OR sercreateid LIKE #{insearch} 
+				OR sercreatetime LIKE #{insearch}
+				OR serassigneid LIKE #{insearch} 
+				OR serassignetime LIKE #{insearch}
+				OR serdealid LIKE #{insearch}
+				OR serdealtime LIKE #{insearch}
+				OR serkeeptime LIKE #{insearch}
+				OR satisfy LIKE #{insearch}
+				OR nocusname LIKE #{insearch}
+				OR nocusphone LIKE #{insearch})
+			</if>
+		</where>
+		<if test="currentPage!=null">
+			limit #{currentPage},8 
+		</if>
+	</select>
+	<select id="selectServe" parameterType="int" resultType="com.zz624.entry.Serve">
+		select * from serve where serveid=#{serveid}
+	</select>
+	<select id="selectCusName" parameterType="int" resultType="java.lang.String">
+		select custname from customer where custid=#{custid}
+	</select>
+	<select id="selectConPh" parameterType="com.zz624.entry.Contact" resultType="com.zz624.entry.Contact">
+		select * from contact
+	</select>
+	<select id="selectAllCus" resultType="com.zz624.entry.Customer">
+		select * from customer
+	</select>
+	<select id="selectCusManRoleId" resultType="int" parameterType="java.lang.String">
+		select roleid from role where rolename=#{rolename}
+	</select>
+	<select id="selectAllCusManager" resultType="com.zz624.entry.User" parameterType="int">
+		select * from user where roleid=#{roleid}
+	</select>
+	<insert id="insertServe" parameterType="com.zz624.entry.Serve">
+		insert into serve(serveid,servename,servecontent,cusid,sercreateid,sercreatetime,nocusname,nocusphone) values(#{serveid},#{servename},#{servecontent},#{cusid},#{sercreateid},#{sercreatetime},#{nocusname},#{nocusphone})
+	</insert>
+	<update id="updateServe" parameterType="com.zz624.entry.Serve">
+		update serve set serassigneid=#{serassigneid},serassignetime=#{serassignetime},serdealid=#{serdealid} where serveid=#{serveid}
+	</update>
+	<update id="updateSerdealtime" parameterType="com.zz624.entry.Serve">
+		update serve set serdealtime=#{serdealtime} where serveid=#{serveid}
+	</update>
+	<update id="updateSersatisfy" parameterType="com.zz624.entry.Serve">
+		update serve set satisfy=#{satisfy} where serveid=#{serveid}
+	</update>
+	<update id="updateSerkeeptime" parameterType="java.lang.String">
+		update serve set serkeeptime=#{serserkeeptime}
+	</update>
+</mapper>

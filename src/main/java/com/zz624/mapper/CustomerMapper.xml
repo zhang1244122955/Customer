@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zz624.dao.CustomerDao">
+	<!-- 查询 -->
+	<!-- 销售主管查询客户信息 -->
+	<select id="selectCustomer" resultType="int">
+		select count(*) from
+		customer
+	</select>
+	<!-- 销售主管查询客户信息（分页） -->
+	<select id="selectCustomerByPage" parameterType="int"
+		resultType="com.zz624.entry.Customer">
+		select * from customer limit #{page},8
+	</select>
+	<!-- 查询所有客户信息 -->
+	<select id="selectCustomers" parameterType="int"
+		resultType="com.zz624.entry.Customer">
+		select * from customer where custid=#{custid};
+	</select>
+	<!-- 查询客户经理的方法 -->
+	<select id="selectManager" resultType="com.zz624.entry.User">
+		select * from user where
+		roleid=4
+	</select>
+	<!-- 查询所有没有添加的开发成功的预备客户名字 -->
+	<select id="selectCustName" resultType="String">
+		select distinct custname
+		from plan p,chance c where planback='开发成功' and
+		p.chid=c.chid and
+		custname not in (select custname from customer);
+	</select>
+	<!-- 参看指定客户所有订单信息 -->
+	<select id="selectOrderByCustid" parameterType="map"
+		resultType="com.zz624.entry.Orders">
+		select * from orders where custid=#{custid} limit #{page},8
+	</select>
+	<!-- 查看所有订单信息 -->
+	<select id="selectOrder" resultType="int">
+		select count(*) from orders
+	</select>
+	<!-- 查看客户流失订单 -->
+	<select id="selectCustomerByOrderByWastage" resultType="int">
+		select
+		count(*)
+		from customer where custid in (select custid from(select
+		oid,custid,DATEDIFF(NOW(),ocreatetime) as diff from (select * from
+		(select * from orders ORDER BY ocreatetime DESC) as t1 GROUP BY custid
+		) as t2) as t3 where diff>180)
+	</select>
+	<!-- 查看客户流失订单信息 -->
+	<select id="selectCustomerByOrderByWastageInfo" resultType="com.zz624.entry.Customer">
+		select *
+		from customer where custid in (select custid from(select
+		oid,custid,DATEDIFF(NOW(),ocreatetime) as diff from (select * from
+		(select * from orders ORDER BY ocreatetime DESC) as t1 GROUP BY custid
+		) as t2) as t3 where diff>180)
+	</select>
+	<!-- 查看客户流失订单分页 -->
+	<select id="selectCustomerByOrderByWastagepage" parameterType="int"
+		resultType="com.zz624.entry.Customer">
+		select * from customer where custid in (select custid
+		from(select
+		oid,custid,DATEDIFF(NOW(),ocreatetime) as diff from (select
+		* from
+		(select * from orders ORDER BY ocreatetime DESC) as t1 GROUP BY
+		custid
+		) as t2) as t3 where diff>180) limit #{page},8
+	</select>
+	<!-- 查看预警流失的客户信息及这个客户最后一次提交的订单(分页) -->
+	<select id="selectwastagepage" parameterType="map"
+		resultType="com.zz624.entry.Wastage">
+		select distinct c.custid,custname,name,ocreatetime,custstate from
+		user u,orders o,customer c where c.custid=#{custid} and name in (select name
+		from user u1,customer u2 where u2.custid=#{custid} and u2.userid=u1.userid)
+		and ocreatetime in (select MAX(ocreatetime) from (select * from orders
+		ORDER BY ocreatetime desc) t1 where custid=#{custid} GROUP BY custid ) limit #{page},8
+	</select>
+	<!-- 查看预警流失的客户信息及这个客户最后一次提交的订单 -->
+	<select id="selectwastage" parameterType="int"
+		resultType="com.zz624.entry.Wastage">
+		select distinct c.custid,custname,name,ocreatetime,custstate,stopwastageinfo from
+		user u,orders o,customer c where c.custid=#{custid} and name in (select name
+		from user u1,customer u2 where u2.custid=#{custid} and u2.userid=u1.userid)
+		and ocreatetime in (select MAX(ocreatetime) from (select * from orders
+		ORDER BY ocreatetime desc) t1 where custid=#{custid} GROUP BY custid )
+	</select>
+	<!-- 增加客户信息 -->
+	<insert id="insertCustomer" parameterType="com.zz624.entry.Customer">
+		insert into customer
+		(custname,custaddress,userid,custlevel,custfax)
+		values(#{custname},#{custaddress},#{userid},#{custlevel},#{custfax});
+	</insert>
+	<!-- 删除客户信息 -->
+	<delete id="deleteCustomer" parameterType="int">
+		delete from customer
+		where custid=#{custid};
+	</delete>
+	<!-- 修改客户信息 -->
+	<update id="updateCustomer" parameterType="com.zz624.entry.Customer">
+		update customer set
+		custname=#{custname},custaddress=#{custaddress},userid=#{userid},custlevel=#{custlevel},custfax=#{custfax}
+		where custid=#{custid};
+	</update>
+	<!-- 流失预警时更改客户状态 -->
+	<update id="updatecustomerstate" parameterType="int">
+		update customer set custstate='流失预警' where custid = #{custid};
+	</update>
+	<!-- 暂缓流失 -->
+	<update id="updatestopwastage" parameterType="map">
+		update customer set custstate='暂缓流失',stopwastageinfo=#{stopwastageinfo} where custid = #{custid};
+	</update>
+	<!-- 确认流失 -->
+	<update id="updatedmwastage" parameterType="map">
+	update customer set custstate='确认流失',determinestageinfo=#{determinestageinfo} where custid = #{custid};
+	</update>
+</mapper>
